@@ -1,4 +1,5 @@
 import { Outlet } from "react-router";
+import { ToastContainer } from 'react-toastify';
 
 export function Layout(){
     return(
@@ -10,6 +11,7 @@ export function Layout(){
             <footer className="bg-gray-300">
                 this is nav bot
             </footer>
+            <ToastContainer/>
         </div>
     )
 }
