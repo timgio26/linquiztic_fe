@@ -1,5 +1,7 @@
-import { Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import { ToastContainer } from 'react-toastify';
+import { PiHouse,PiNotepad,PiRanking,PiUserCircle  } from "react-icons/pi";
+
 
 export function Layout(){
     return(
@@ -9,7 +11,28 @@ export function Layout(){
                 <Outlet/>
             </main>
             <footer className="bg-gray-300">
-                this is nav bot
+                <div className="flex flex-row justify-around py-2">
+                    <NavLink to={'/'}>
+
+                    <div>
+                        <span><PiHouse size={40}/></span>
+                    </div>
+                    </NavLink>
+
+
+                    <div>
+                        <span><PiNotepad size={40}/></span>
+                    </div>
+                    <div>
+                        <span><PiRanking size={40}/></span>
+                    </div>
+                    <NavLink to={'/profile'}>
+                    <div>
+                        <span><PiUserCircle size={40}/></span>
+                    </div>
+
+                    </NavLink>
+                </div>
             </footer>
             <ToastContainer/>
         </div>
