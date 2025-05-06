@@ -35,13 +35,13 @@ export function Auth() {
       if (resp.status == 200){ 
         const parsed = loginSchema.safeParse(resp.data)
         if (!parsed.success) {
-          toast.error("cant log in.  try again later");
+          toast.error("cant log in. try again later");
         } else {
           sessionStorage.setItem("id", parsed.data.id);
           navigate('/',{replace:true})
         }
       }
-      else toast.error("cant log in.  try again later");
+      else toast.error("cant log in. try again later");
     })
     .catch(() => toast.error("cant log in. try again later"));
     setIsLoading(false);
