@@ -7,6 +7,8 @@ import { useNavigate } from "react-router";
 import hp1 from "../assets/hp1.jpg"
 import hp2 from "../assets/hp2.jpg"
 import hp3 from "../assets/hp3.jpg"
+import { useAppDispatch } from "../app/hook";
+import { setLanguage } from "../features/languageSlice";
 
 export function Homepage() {
   const [language, setlanguage] = useState<string>();
@@ -17,9 +19,8 @@ export function Homepage() {
   const [isloading, setIsLoading] = useState<boolean>(false);
   const [userLanguages, setUserLanguages] = useState<LanguageList>();
 
-  console.log(userLanguages)
-
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   const getUserLanguage = useCallback(async()=>{
     const id = sessionStorage.getItem("id");
@@ -29,7 +30,7 @@ export function Homepage() {
         if (resp.status == 200) {
           const parseResult = LanguageListSchema.safeParse(resp.data);
           setUserLanguages(parseResult.data);
-        } else console.log("cant get user languages");
+        } else console.log("cant get user languages no resp");
       })
       .catch(() => console.log("cant get user languages"));
   },[])
@@ -75,6 +76,14 @@ export function Homepage() {
     window.location.reload()
   }
 
+  function goToFlashCard(){
+    if(!userLanguages)return
+    const userLanguage = userLanguages.filter((each)=>each.language==language)
+    if(userLanguage.length){
+      navigate("/flashcard", { state: {userLanguageId:userLanguage[0].id} })
+    }
+  }
+
   return (
     <>
       <div
@@ -91,7 +100,7 @@ export function Homepage() {
               className={`border px-5 py-2 my-1 ${
                 language == each ? "border-amber-500" : ""
               } justify-between flex`}
-              onClick={() => setlanguage(each)}
+              onClick={() => {setlanguage(each);dispatch(setLanguage(each))}}
             >
               <span>{each}</span>
               <span>
@@ -123,9 +132,7 @@ export function Homepage() {
           </div>
           <div
             className="border px-5 py-2 my-1"
-            onClick={() =>
-              navigate("/flashcard", { state: { userLanguages, language } })
-            }
+            onClick={goToFlashCard}
           >
             Flash Card
           </div>
