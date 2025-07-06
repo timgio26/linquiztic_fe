@@ -100,7 +100,15 @@ export function Homepage() {
               className={`border px-5 py-2 my-1 ${
                 language == each ? "border-amber-500" : ""
               } justify-between flex`}
-              onClick={() => {setlanguage(each);dispatch(setLanguage(each))}}
+              onClick={() => {
+                setlanguage(each);
+                dispatch(
+                  setLanguage({
+                    language: each,
+                    language_id: userLanguages?.find(lan => lan.language === each)?.id || "",
+                  })
+                );
+              }}
             >
               <span>{each}</span>
               <span>
@@ -115,7 +123,11 @@ export function Homepage() {
         </div>
       </div>
 
-      <div className={`${language && !isPlacement ? "" : "hidden"} h-full flex flex-col justify-between`}>
+      <div
+        className={`${
+          language && !isPlacement ? "" : "hidden"
+        } h-full flex flex-col justify-between`}
+      >
         <h1 className="text-3xl my-9">How you want to start</h1>
         <img src={hp2} alt="second homepage image" />
         <div className="my-9">
@@ -130,10 +142,7 @@ export function Homepage() {
           >
             Placement Test
           </div>
-          <div
-            className="border px-5 py-2 my-1"
-            onClick={goToFlashCard}
-          >
+          <div className="border px-5 py-2 my-1" onClick={goToFlashCard}>
             Flash Card
           </div>
           <div className="border px-5 py-2 my-1">Sentence Training</div>
@@ -146,35 +155,38 @@ export function Homepage() {
         </div>
       </div>
 
-      <div className={`${isPlacement && !aiFeedback ? "" : "hidden"} h-full flex flex-col justify-between`}>
+      <div
+        className={`${
+          isPlacement && !aiFeedback ? "" : "hidden"
+        } h-full flex flex-col justify-between`}
+      >
         <h1 className="text-3xl my-9">Type anything in {language}</h1>
         <img src={hp3} alt="third homepage image" />
         <div className="my-9">
-        <textarea
-          name=""
-          id=""
-          rows={4}
-          className="w-full border p-1"
-          placeholder="its ok if you dont know anything. just hit submit button"
-          value={userText}
-          onChange={(e) => setUserText(e.target.value)}
-        />
-        <div className="flex gap-4">
-          <button
-            className="w-full py-1.5 border"
-            onClick={() => setIsPlacement(false)}
-          >
-            Back
-          </button>
-          <button
-            className="w-full py-1.5 border bg-black text-white"
-            onClick={getAiFeedback}
-            disabled={isloading}
-          >
-            {isloading ? "Loading" : "Submit"}
-          </button>
-        </div>
-
+          <textarea
+            name=""
+            id=""
+            rows={4}
+            className="w-full border p-1"
+            placeholder="its ok if you dont know anything. just hit submit button"
+            value={userText}
+            onChange={(e) => setUserText(e.target.value)}
+          />
+          <div className="flex gap-4">
+            <button
+              className="w-full py-1.5 border"
+              onClick={() => setIsPlacement(false)}
+            >
+              Back
+            </button>
+            <button
+              className="w-full py-1.5 border bg-black text-white"
+              onClick={getAiFeedback}
+              disabled={isloading}
+            >
+              {isloading ? "Loading" : "Submit"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -182,9 +194,7 @@ export function Homepage() {
         <div className="h-full flex flex-col justify-between">
           <h1 className="text-3xl my-9">Result</h1>
           <div className="text-center my-2">
-
             <span className="text-9xl">{aiFeedback.proficiencyLevel}</span>
-
           </div>
           <div>
             <span>{aiFeedback.feedback}</span>
@@ -199,7 +209,10 @@ export function Homepage() {
             >
               Back
             </button>
-            <button className="w-full py-1.5 border bg-black text-white" onClick={addLanguage}>
+            <button
+              className="w-full py-1.5 border bg-black text-white"
+              onClick={addLanguage}
+            >
               {isloading ? "Loading..." : "Next"}
             </button>
           </div>

@@ -4,11 +4,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 // Define a type for the slice state
 export interface LanguageState {
   language: string
+  language_id:string
 }
 
 // Define the initial state using that type
 const initialState: LanguageState = {
-  language: ""
+  language: "",
+  language_id:""
 }
 
 export const languageSlice = createSlice({
@@ -16,9 +18,11 @@ export const languageSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setLanguage: (state, action: PayloadAction<string>) => {
-      state.language = action.payload
+    setLanguage: (state, action: PayloadAction<{ language: string; language_id: string }>) => {
+      state.language = action.payload.language;
+      state.language_id = action.payload.language_id
     }
+
   }
 })
 
