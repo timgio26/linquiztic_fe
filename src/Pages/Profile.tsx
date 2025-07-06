@@ -31,10 +31,10 @@ export function Profile() {
   return (
     <div className="relative h-full">
       <h1>Profile</h1>
-      <div onClick={() => setShowConfirm(true)}>
+      <div className="w-full py-1.5 border my-2 px-5" onClick={() => setShowConfirm(true)}>
         <span>delete account</span>
       </div>
-      <div onClick={logout}>
+      <div className="w-full py-1.5 border my-2 px-5" onClick={logout}>
         <span>log out</span>
       </div>
 

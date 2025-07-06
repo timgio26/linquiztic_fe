@@ -18,7 +18,7 @@ export function FlashCard() {
       if (parseResult.success) {
         await axios
           .get(
-            `${import.meta.env.VITE_BE_URL}/api/values/getLanguage/${
+            `/api/getLanguage/${
               parseResult.data.userLanguageId
             }`
           )

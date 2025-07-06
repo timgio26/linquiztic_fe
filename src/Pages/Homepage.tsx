@@ -25,7 +25,7 @@ export function Homepage() {
   const getUserLanguage = useCallback(async()=>{
     const id = sessionStorage.getItem("id");
     await axios
-      .get(`${import.meta.env.VITE_BE_URL}/api/values/getUserLanguage/${id}`)
+      .get(`/api/getUserLanguage/${id}`)
       .then((resp) => {
         if (resp.status == 200) {
           const parseResult = LanguageListSchema.safeParse(resp.data);
@@ -62,7 +62,7 @@ export function Homepage() {
       return;
     }
     await axios
-      .post(`${import.meta.env.VITE_BE_URL}/api/values/addLanguage`, {
+      .post(`/api/addLanguage`, {
         language,
         level: aiFeedback.proficiencyLevel,
         userId,

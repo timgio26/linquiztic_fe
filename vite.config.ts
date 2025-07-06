@@ -5,4 +5,14 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(),tailwindcss(),],
+  server:{
+    proxy:{
+        '/api': {
+        target: 'https://localhost:7098/api/Values/', // your .NET backend
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+    }
+  }
+  }
 })

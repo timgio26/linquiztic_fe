@@ -19,7 +19,7 @@ export function Auth() {
 
   async function Signup() {
     setIsLoading(true);
-    await axios.post(`${import.meta.env.VITE_BE_URL}/api/values/signup`, {name,email})
+    await axios.post(`/api/signup`, {name,email})
       .then((resp) => {
         if (resp.status == 200) toast.success("registered, please login");
         else toast.error("cant register.  try again later");
@@ -30,7 +30,7 @@ export function Auth() {
 
   async function Signin(){
     setIsLoading(true)
-    await axios.post(`${import.meta.env.VITE_BE_URL}/api/values/signin`, {email})
+    await axios.post(`/api/signin`, {email})
     .then((resp) => {
       if (resp.status == 200){ 
         const parsed = loginSchema.safeParse(resp.data)
