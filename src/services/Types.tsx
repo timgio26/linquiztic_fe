@@ -5,6 +5,11 @@ import { z } from "zod";
 //   level: z.string(),
 //   id:z.string()
 // });
+export const loginSchema = z.object({
+    id : z.string(),
+    name : z.string(),
+    email : z.string()
+  })
 
 export const FlashCardSchema = z.object({
   userLanguageId: z.string(),

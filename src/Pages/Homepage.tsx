@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFeedback, fetchAiResponse } from "../services/LinquizticAi";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { LanguageList, LanguageListSchema } from "../services/Types";
 import { useNavigate } from "react-router";
-import hp1 from "../assets/hp1.jpg"
-import hp2 from "../assets/hp2.jpg"
-import hp3 from "../assets/hp3.jpg"
+import hp1 from "../assets/hp1.jpg";
+import hp2 from "../assets/hp2.jpg";
+import hp3 from "../assets/hp3.jpg";
 import { useAppDispatch } from "../app/hook";
 import { setLanguage } from "../features/languageSlice";
+import { addLanguageApi, getUserLanguageApi } from "../services/api";
 
 export function Homepage() {
   const [language, setlanguage] = useState<string>();
@@ -19,25 +19,19 @@ export function Homepage() {
   const [isloading, setIsLoading] = useState<boolean>(false);
   const [userLanguages, setUserLanguages] = useState<LanguageList>();
 
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-
-  const getUserLanguage = useCallback(async()=>{
-    const id = sessionStorage.getItem("id");
-    await axios
-      .get(`/api/getUserLanguage/${id}`)
-      .then((resp) => {
-        if (resp.status == 200) {
-          const parseResult = LanguageListSchema.safeParse(resp.data);
-          setUserLanguages(parseResult.data);
-        } else console.log("cant get user languages no resp");
-      })
-      .catch(() => console.log("cant get user languages"));
-  },[])
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    async function getUserLanguage() {
+      const resp = await getUserLanguageApi();
+      if (resp.status == 200) {
+        const parseResult = LanguageListSchema.safeParse(resp.data);
+        setUserLanguages(parseResult.data);
+      }
+    }
     getUserLanguage();
-  },[getUserLanguage]);
+  }, []);
 
   async function getAiFeedback() {
     if (!userText || !language) {
@@ -51,36 +45,32 @@ export function Homepage() {
       toast.dark("something wrong", { position: "top-center" });
     }
     setIsLoading(false);
-    
   }
 
   async function addLanguage() {
     setIsLoading(true);
     const userId = sessionStorage.getItem("id");
-    if (!aiFeedback || !userId) {
+    if (!aiFeedback || !userId || !language) {
       setIsLoading(false);
       return;
     }
-    await axios
-      .post(`/api/addLanguage`, {
-        language,
-        level: aiFeedback.proficiencyLevel,
-        userId,
-      })
-      .then((resp) => {
-        if (resp.status == 200) toast.success("language added");
-        else toast.error("cant add language. try again later");
-      })
-      .catch(() => toast.error("cant add language. try again later"));
+    const resp = await addLanguageApi(language, aiFeedback.proficiencyLevel);
+    if (resp.status == 200) {
+      toast.success("language added");
+    } else {
+      toast.error("cant add language. try again later");
+    }
     setIsLoading(false);
-    window.location.reload()
+    window.location.reload();
   }
 
-  function goToFlashCard(){
-    if(!userLanguages)return
-    const userLanguage = userLanguages.filter((each)=>each.language==language)
-    if(userLanguage.length){
-      navigate("/flashcard", { state: {userLanguageId:userLanguage[0].id} })
+  function goToFlashCard() {
+    if (!userLanguages) return;
+    const userLanguage = userLanguages.filter(
+      (each) => each.language == language
+    );
+    if (userLanguage.length) {
+      navigate("/flashcard", { state: { userLanguageId: userLanguage[0].id } });
     }
   }
 
@@ -105,7 +95,9 @@ export function Homepage() {
                 dispatch(
                   setLanguage({
                     language: each,
-                    language_id: userLanguages?.find(lan => lan.language === each)?.id || "",
+                    language_id:
+                      userLanguages?.find((lan) => lan.language === each)?.id ||
+                      "",
                   })
                 );
               }}

@@ -1,8 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { z } from "zod";
 import { useNavigate } from "react-router";
+import { signinApi, signupApi } from "../services/api";
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState<boolean>(true)
@@ -11,39 +9,18 @@ export function Auth() {
   const [email,setEmail] = useState<string>("") 
   const navigate = useNavigate()
 
-  const loginSchema = z.object({
-    id : z.string(),
-    name : z.string(),
-    email : z.string()
-  })
-
   async function Signup() {
     setIsLoading(true);
-    await axios.post(`/api/signup`, {name,email})
-      .then((resp) => {
-        if (resp.status == 200) toast.success("registered, please login");
-        else toast.error("cant register.  try again later");
-      })
-      .catch(() => toast.error("cant register. try again later"));
+    await signupApi(name,email)
     setIsLoading(false);
   }
 
   async function Signin(){
     setIsLoading(true)
-    await axios.post(`/api/signin`, {email})
-    .then((resp) => {
-      if (resp.status == 200){ 
-        const parsed = loginSchema.safeParse(resp.data)
-        if (!parsed.success) {
-          toast.error("cant log in. try again later");
-        } else {
-          sessionStorage.setItem("id", parsed.data.id);
-          navigate('/',{replace:true})
-        }
-      }
-      else toast.error("cant log in. try again later");
-    })
-    .catch(() => toast.error("cant log in. try again later"));
+    const loginStatus = await signinApi(email)
+    if(loginStatus){
+      navigate('/',{replace:true})
+    }
     setIsLoading(false);
   }
 
