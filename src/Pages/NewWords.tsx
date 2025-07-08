@@ -21,8 +21,11 @@ export function NewWords() {
   },[language]);
   
   useEffect(() => {
+    if(!language){
+      navigate('/')
+    }
     getNewVocab()
-  }, [getNewVocab]);
+  }, [getNewVocab,language,navigate,langId]);
 
   async function nextWord(word:string){
     if(maxStep<=step){
@@ -33,7 +36,7 @@ export function NewWords() {
       setMaxStep((curstate)=>curstate+1)
     }
     if(newWords && step == newWords.length-1){
-      navigate('/')
+      navigate('/flashcard', { state: { userLanguageId: langId } })
     }
   }
 

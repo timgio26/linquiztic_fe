@@ -7,6 +7,14 @@ export async function addWord(wordText: string, userLanguageId: string) {
   return response.status
 }
 
+export async function deleteWord(id:string|number){
+  const response = await axios.delete(`/api/deleteWord/${id}`)
+  console.log(response)
+  if(response.status!=200){
+    toast.error("cant delete word")
+  }
+}
+
 export async function getUserLanguageApi(){
   const id = sessionStorage.getItem("id");
   const response = await axios.get(`/api/getUserLanguage/${id}`)
