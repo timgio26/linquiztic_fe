@@ -36,6 +36,7 @@ export function NewWords() {
       setMaxStep((curstate)=>curstate+1)
     }
     if(newWords && step == newWords.length-1){
+      console.log("go to flash card")
       navigate('/flashcard', { state: { userLanguageId: langId } })
     }
   }
