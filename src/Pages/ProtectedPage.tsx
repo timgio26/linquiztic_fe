@@ -1,4 +1,4 @@
-import { ReactNode, useLayoutEffect } from "react"
+import { ReactNode, useEffect } from "react"
 import { useNavigate } from "react-router"
 
 type ProtectedPageProp = {
@@ -8,9 +8,9 @@ type ProtectedPageProp = {
 export function ProtectedPage({children}:ProtectedPageProp){
     const navigate = useNavigate()
     const id = sessionStorage.getItem('id')
-    useLayoutEffect(()=>{
+    useEffect(()=>{
         if (!id) {
-            navigate('/auth')
+            navigate('/auth',{replace:true})
         }
     },[id,navigate])
 

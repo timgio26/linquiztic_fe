@@ -40,6 +40,10 @@ export function FlashCard() {
     getMyVocab();
   }, [location, refresh]);
 
+  function goToEachWord(word:string){
+    navigate(`/word?word=${word}`)
+  }
+
   return (
     <div className="h-full flex flex-col justify-between">
       <div>
@@ -58,9 +62,6 @@ export function FlashCard() {
                 <div>
                   <span className="text-7xl">no word found</span>
                 </div>
-                {/* <div className="my-9" onClick={() => navigate("/newwords")}>
-              <div className="border px-5 py-2 my-1">Get New Words</div>
-            </div> */}
               </>
             )
           )}
@@ -72,9 +73,10 @@ export function FlashCard() {
                   <div
                     className="flex justify-between px-5 py-2 border rounded my-0.5"
                     key={each.id}
+                    onClick={()=>goToEachWord(each.wordText)}
                   >
                     <span>{each.wordText}</span>
-                    <div onClick={() => trigerDelConfirm(each.id)}>
+                    <div onClick={(e) => {e.stopPropagation();trigerDelConfirm(each.id)}}>
                       <span>❌</span>
                     </div>
                   </div>

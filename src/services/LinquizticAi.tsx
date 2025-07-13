@@ -12,7 +12,7 @@ const aiFeedbackSchema = z.object({
   feedback: z.string(),
 });
 
-const AiNewWordFeedbackSchema = z.array(z.object({word:z.string(),meaning:z.string()}))
+export const AiNewWordFeedbackSchema = z.array(z.object({word:z.string(),meaning:z.string()}))
 
 export type AiFeedback = z.infer<typeof aiFeedbackSchema>;
 export type AiNewWordFeedback = z.infer<typeof AiNewWordFeedbackSchema>;

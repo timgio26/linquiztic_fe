@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../app/hook";
-import { AiNewWordFeedback, getAiNewVocab } from "../services/LinquizticAi";
-import { addWord } from "../services/api";
+import { AiNewWordFeedback } from "../services/LinquizticAi";
+import { addWord, getNewWordsApi } from "../services/api";
 import { useNavigate } from "react-router";
 
 export function NewWords() {
@@ -13,19 +13,29 @@ export function NewWords() {
   const langId = useAppSelector((state)=>state.language.language_id)
   const navigate = useNavigate()
   
-  const getNewVocab = useCallback(async () => {
-    setLoadingWord(true);
-    const resp = await getAiNewVocab(language, "a1");
-    if (resp.success) setNewWords(resp.data);
-    setLoadingWord(false);
-  },[language]);
-  
+  // const getNewVocab = useCallback(async () => {
+  //   setLoadingWord(true);
+  //   const resp = await getAiNewVocab(language, "a1");
+  //   if (resp.success) setNewWords(resp.data);
+  //   setLoadingWord(false);
+  // },[language]);
+
+  const getNewVocab = useCallback(async () =>{
+      setLoadingWord(true);
+      const resp = await getNewWordsApi(langId)
+      if(resp){
+        setNewWords(resp.data);
+      }
+      setLoadingWord(false);
+  },[langId])
+
+
   useEffect(() => {
     if(!language){
       navigate('/')
     }
     getNewVocab()
-  }, [getNewVocab,language,navigate,langId]);
+  }, [language,navigate,getNewVocab]);
 
   async function nextWord(word:string){
     if(maxStep<=step){

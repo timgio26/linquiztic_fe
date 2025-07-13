@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import {loginSchema} from "./Types"
+import { AiNewWordFeedbackSchema } from "./LinquizticAi";
 
 export async function addWord(wordText: string, userLanguageId: string) {
   const response = await axios.post("/api/addWord", { wordText, userLanguageId })
@@ -9,7 +10,7 @@ export async function addWord(wordText: string, userLanguageId: string) {
 
 export async function deleteWord(id:string|number){
   const response = await axios.delete(`/api/deleteWord/${id}`)
-  console.log(response)
+  // console.log(response)
   if(response.status!=200){
     toast.error("cant delete word")
   }
@@ -52,4 +53,18 @@ export async function signinApi(email:string){
     }
   }
   return status;
+}
+
+export async function getNewWordsApi(id:string){
+  const response = await axios.get(`/api/getNewWords?userLangId=${id}`)
+  if(response.status !== 200){
+    toast.error("cant get new words.  try again later");
+    return null
+  }
+  const parsed = AiNewWordFeedbackSchema.safeParse(response.data)
+  if(!parsed.success){
+    toast.error("cant get new words.  try again later");
+    return null
+  }
+  return parsed;
 }

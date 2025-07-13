@@ -27,6 +27,9 @@ export const LanguageSchema = z.object({
   level: z.string(),
   words: z.array(WordSchema).nullable(),
 });
+
+
+
 export type Language = z.infer<typeof LanguageSchema>;
 
 export const LanguageListSchema = z.array(LanguageSchema);
