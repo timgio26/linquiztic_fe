@@ -40,8 +40,8 @@ export function FlashCard() {
     getMyVocab();
   }, [location, refresh]);
 
-  function goToEachWord(word:string){
-    navigate(`/word?word=${word}`)
+  function goToEachWord(word:string,language:string){
+    navigate(`/word?word=${word}&language=${language}`)
   }
 
   return (
@@ -73,7 +73,7 @@ export function FlashCard() {
                   <div
                     className="flex justify-between px-5 py-2 border rounded my-0.5"
                     key={each.id}
-                    onClick={()=>goToEachWord(each.wordText)}
+                    onClick={()=>goToEachWord(each.wordText,allWords.language)}
                   >
                     <span>{each.wordText}</span>
                     <div onClick={(e) => {e.stopPropagation();trigerDelConfirm(each.id)}}>

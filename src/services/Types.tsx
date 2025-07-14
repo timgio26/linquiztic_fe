@@ -28,6 +28,13 @@ export const LanguageSchema = z.object({
   words: z.array(WordSchema).nullable(),
 });
 
+export const WordMeaningSchema = z.object({
+  word:z.string(),
+  meaning:z.string(),
+  sample_sentence:z.string(),
+  sample_translation:z.string(),
+})
+
 
 
 export type Language = z.infer<typeof LanguageSchema>;

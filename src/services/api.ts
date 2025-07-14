@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import {loginSchema} from "./Types"
+import {loginSchema, WordMeaningSchema} from "./Types"
 import { AiNewWordFeedbackSchema } from "./LinquizticAi";
 
 export async function addWord(wordText: string, userLanguageId: string) {
@@ -58,13 +58,29 @@ export async function signinApi(email:string){
 export async function getNewWordsApi(id:string){
   const response = await axios.get(`/api/getNewWords?userLangId=${id}`)
   if(response.status !== 200){
-    toast.error("cant get new words.  try again later");
+    toast.error("cant get new words. try again later");
     return null
   }
   const parsed = AiNewWordFeedbackSchema.safeParse(response.data)
   if(!parsed.success){
-    toast.error("cant get new words.  try again later");
+    toast.error("cant get new words. try again later");
     return null
   }
   return parsed;
 }
+
+export async function getWordMeaningApi(word:string,language:string){
+    const response = await axios.get(`/api/getWordMeaning?word=${word}&language=${language}`)
+    // console.log(response)
+    if(response.status !== 200){
+      toast.error("cant get word meaning. try again later");
+      return null
+    }
+    const parsed = WordMeaningSchema.safeParse(response.data)
+    console.log(parsed)
+    if(!parsed.success){
+      toast.error("cant get word meaning. try again later");
+      return null
+    }
+    return parsed;
+  }
