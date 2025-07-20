@@ -7,10 +7,13 @@ import { useAppDispatch } from "../app/hook";
 import { setLanguage } from "../features/languageSlice";
 import { getUserLanguageApi } from "../services/api";
 import { AiFeedback } from "../Components/AiFeedback";
+import { Error } from "../Components/Error";
 
 export function Homepage() {
   const [language, setlanguage] = useState<string>();
   const [isPlacement, setIsPlacement] = useState<boolean>(false);
+  const [isError,setIsError] = useState<boolean>(false)
+  const [isLoading,setIsLoading] = useState<boolean>(true)
   const languages = ["Norwegian", "Dutch", "Spanish"];
 
   const [userLanguages, setUserLanguages] = useState<LanguageList>();
@@ -21,9 +24,13 @@ export function Homepage() {
   useEffect(() => {
     async function getUserLanguage() {
       const resp = await getUserLanguageApi();
-      if (resp.status == 200) {
+      if (resp.success) {
         const parseResult = LanguageListSchema.safeParse(resp.data);
         setUserLanguages(parseResult.data);
+        setIsLoading(false)
+      }else{
+        setIsError(true)
+        setIsLoading(false)
       }
     }
     getUserLanguage();
@@ -38,6 +45,12 @@ export function Homepage() {
       navigate("/flashcard", { state: { userLanguageId: userLanguage[0].id } });
     }
   }
+
+  if(isLoading)return(<div></div>)
+
+  if(isError)return(
+    <Error/>
+  )
 
   return (
     <>

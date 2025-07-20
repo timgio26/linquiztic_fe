@@ -1,33 +1,31 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { deleteAccountApi } from "../services/api";
+import { SignoutFireBase } from "../services/firebase";
 
 export function Profile() {
   const [showConfirm,setShowConfirm] = useState<boolean>(false)
   const navigate = useNavigate()
 
   async function handleDelUser(){
-    const id = sessionStorage.getItem("id")
-    await axios.delete(`${import.meta.env.VITE_BE_URL}/api/values/deleteUser/${id}`)
-    .then((resp)=>{
-      console.log(resp)
-      if (resp.status == 204) {
-        toast.success("Bye, sad to see you go")
-        sessionStorage.clear()
-        navigate('/')
-      } else {
-        toast.error("cant delete user.  try again later");
-      }
+    const id = sessionStorage.getItem("id");
+    if (!id) return;
+    const resp = await deleteAccountApi(id);
+    if (resp.status == 204) {
+      toast.success("Bye, sad to see you go");
+      sessionStorage.clear();
+      navigate("/");
+    } else {
+      toast.error("cant delete user.  try again later");
     }
-    )
-    .catch(() => toast.error("cant delete user. try again later"));
   }
 
-  function logout(){
-    sessionStorage.clear()
+  async function logout(){
+    await SignoutFireBase()
     navigate('/')
   }
+  
   return (
     <div className="relative h-full">
       <h1>Profile</h1>

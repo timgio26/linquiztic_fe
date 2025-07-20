@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import {loginSchema, WordMeaningSchema} from "./Types"
 import { AiNewWordFeedbackSchema } from "./LinquizticAi";
+// import { data } from "react-router";
 
 export async function addWord(wordText: string, userLanguageId: string) {
   const response = await axios.post("/api/addWord", { wordText, userLanguageId })
@@ -18,8 +19,18 @@ export async function deleteWord(id:string|number){
 
 export async function getUserLanguageApi(){
   const id = sessionStorage.getItem("id");
-  const response = await axios.get(`/api/getUserLanguage/${id}`)
-  return response
+  try {
+    const response = await axios.get(`/api/getUserLanguage/${id}`);
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error
+    };
+  }
 }
 
 export async function addLanguageApi(language:string,level:string){
@@ -33,15 +44,33 @@ export async function getUserLanguageDetailApi(userLanguageId:string){
   return response
 }
 
-export async function signupApi(name:string,email:string){
-  const response = await axios.post(`/api/signup`, {name,email})
-  if (response.status == 200) toast.success("registered, please login");
-  else toast.error("cant register.  try again later");
+export async function signupApi(name:string,email:string,firebaseId:string){
+  try {
+    const response = await axios.post(`/api/signup`, {name,email,firebaseId})
+    return {
+      status:response.status,
+      data:response.data
+    }
+  } catch {
+    return {
+      status:500,
+      data:null
+    }
+  }
 }
 
 export async function signinApi(email:string){
   let status=false;
-  const response = await axios.post(`/api/signin`, {email})
+  let response
+  
+  try {
+    response = await axios.post(`/api/signin`, {email})
+  } catch {
+
+    toast.error("wrong email");
+    return;
+  }
+
   if(response.status==200){
     const parsed = loginSchema.safeParse(response.data)
     if (!parsed.success) {
@@ -77,10 +106,15 @@ export async function getWordMeaningApi(word:string,language:string){
       return null
     }
     const parsed = WordMeaningSchema.safeParse(response.data)
-    console.log(parsed)
+    // console.log(parsed)
     if(!parsed.success){
       toast.error("cant get word meaning. try again later");
       return null
     }
     return parsed;
+  }
+
+  export async function deleteAccountApi(id:string){
+    const response = await axios.delete(`/api/deleteUser/${id}`)
+    return response
   }

@@ -1,22 +1,30 @@
-import { ReactNode, useEffect } from "react"
-import { useNavigate } from "react-router"
+    import { ReactNode, useEffect, useState } from "react";
+    import {  useNavigate } from "react-router";
+    import { GetCurrentUser } from "../services/firebase";
 
-type ProtectedPageProp = {
-    children : ReactNode
-}
 
-export function ProtectedPage({children}:ProtectedPageProp){
-    const navigate = useNavigate()
-    const id = sessionStorage.getItem('id')
-    useEffect(()=>{
-        if (!id) {
-            navigate('/auth',{replace:true})
+    type ProtectedPageProp = {
+    children: ReactNode;
+    };
+
+    export function ProtectedPage({ children }: ProtectedPageProp) {
+
+    const [checking, setChecking] = useState<boolean>(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function GetUser() {
+        const user = await GetCurrentUser();
+        if (!user) {
+            navigate("/auth", { replace: true });
+            return;
         }
-    },[id,navigate])
+        setChecking(false)
+        }
+        GetUser();
+    }, [navigate]);
 
-    return(
-        <>
-        {children}
-        </>
-    )
-}
+    if (checking) return <><span>Loading</span></>;
+
+    return <>{children}</>;
+    }
