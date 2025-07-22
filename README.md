@@ -1,7 +1,8 @@
 # Linquiztic
 
 ## the idea
-I want to make a language learning app which personalized based on user interest. no more boring vocab
+I want to make a language learning app which personalized based on user interest. no more boring vocab. </br>
+check backend C# .NET repo https://github.com/timgio26/Linquiztic
 
 ## the features
 - ai sentence checker
