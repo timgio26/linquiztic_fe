@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import hp3 from "../assets/hp3.jpg";
 import { addLanguageApi } from "../services/api";
 import { useState } from "react";
+// import { auth } from "../services/firebase";
 
 type AiFeedbackProp = {
     language:string;
@@ -35,19 +36,18 @@ export function AiFeedback({language,isPlacement,setIsPlacement}:AiFeedbackProp)
 
   async function addLanguage() {
     setIsLoading(true);
-    const userId = sessionStorage.getItem("id");
-    if (!aiFeedback || !userId || !language) {
+    if (!aiFeedback || !language) {
       setIsLoading(false);
       return;
     }
     const resp = await addLanguageApi(language, aiFeedback.proficiencyLevel);
     if (resp.status == 200) {
       toast.success("language added");
+      window.location.reload();
     } else {
       toast.error("cant add language. try again later");
     }
     setIsLoading(false);
-    window.location.reload();
   }
   return (
     <>

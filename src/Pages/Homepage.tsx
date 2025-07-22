@@ -14,7 +14,7 @@ export function Homepage() {
   const [isPlacement, setIsPlacement] = useState<boolean>(false);
   const [isError,setIsError] = useState<boolean>(false)
   const [isLoading,setIsLoading] = useState<boolean>(true)
-  const languages = ["Norwegian", "Dutch", "Spanish"];
+  const languages = ["French", "Dutch", "Spanish"];
 
   const [userLanguages, setUserLanguages] = useState<LanguageList>();
 

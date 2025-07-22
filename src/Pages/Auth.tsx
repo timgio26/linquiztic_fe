@@ -5,29 +5,21 @@ import { SigninFireBase, SignupFireBase } from "../services/firebase";
 import { signupApi } from "../services/api";
 import { toast } from "react-toastify";
 import { deleteUser } from "firebase/auth";
+import { PassswordChecker } from "../services/tools";
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const hasSixChar = password.length >= 6;
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasDigit = /\d/.test(password);
-  const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
-  const disabled =
-    !hasDigit ||
-    !hasLowerCase ||
-    !hasUpperCase ||
-    !hasSpecialChar ||
-    !hasSixChar;
+  const [name, setName] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
+  const {hasSixChar,hasUpperCase,hasLowerCase,hasDigit,hasSpecialChar,disabled} = PassswordChecker(password?password:"")
 
   const navigate = useNavigate();
 
   async function Signup(e: FormEvent) {
     e.preventDefault();
+    if(!email||!password||!name){return}
     setIsLoading(true);
     const resp = await SignupFireBase(email, password);
     if (resp && resp.user) {
@@ -44,6 +36,7 @@ export function Auth() {
 
   async function Signin(e: FormEvent) {
     e.preventDefault();
+    if(!email||!password){return}
     setIsLoading(true);
     const resp = await SigninFireBase(email, password);
     if (resp && resp.user) {
@@ -125,7 +118,7 @@ export function Auth() {
             id="password"
             name="password"
             className="border-b focus:outline-none font-bold"
-            autoComplete="false"
+            autoComplete="off"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -147,9 +140,9 @@ export function Auth() {
           </div>
           <button
             className={`w-full py-1.5 border my-2 ${
-              disabled && "cursor-not-allowed opacity-20"
+              (disabled||!email||!password) && "cursor-not-allowed opacity-20"
             }`}
-            disabled={disabled}
+            disabled={disabled||!email||!password}
             onClick={Signup}
           >
             {!isLoading ? "Register" : "Loading..."}

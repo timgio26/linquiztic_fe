@@ -14,11 +14,12 @@ export function Word() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     async function getWordMeaning(word: string, language: string) {
-
       setIsLoading(true);
-      const response = await getWordMeaningApi(word, language);
-
+      const response = await getWordMeaningApi(word, language,signal);
       if (!response) return;
       setMeaning(response.data.meaning);
       setSample(response.data.sample_sentence);
@@ -30,6 +31,10 @@ export function Word() {
       return;
     }
     getWordMeaning(word, language);
+
+    return ()=>{
+      controller.abort()
+    }
   }, [word, language, navigate]);
 
   return (

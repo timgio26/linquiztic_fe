@@ -14,12 +14,12 @@
 
     useEffect(() => {
         async function GetUser() {
-        const user = await GetCurrentUser();
-        if (!user) {
+          const user = await GetCurrentUser();
+          if (!user) {
             navigate("/auth", { replace: true });
             return;
-        }
-        setChecking(false)
+          }
+          setChecking(false);
         }
         GetUser();
     }, [navigate]);
