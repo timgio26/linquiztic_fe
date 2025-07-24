@@ -6,3 +6,5 @@ export { NewWords } from "./NewWords";
 export { Profile } from "./Profile";
 export { ProtectedPage } from "./ProtectedPage";
 export { Word } from "./Word";
+export {Quiz} from "./Quiz"
+export {NotFound} from "./NotFound"

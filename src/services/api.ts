@@ -2,7 +2,7 @@ import axios, { GenericAbortSignal } from "axios";
 import { toast } from "react-toastify";
 import {loginSchema, WordMeaningSchema} from "./Types"
 import { AiNewWordFeedbackSchema } from "./LinquizticAi";
-import { auth } from "./firebase";
+import { getToken } from "./tools";
 
 export async function addWord(wordText: string, userLanguageId: string) {
   const response = await axios.post("/api/addWord", { wordText, userLanguageId })
@@ -20,13 +20,8 @@ export async function deleteWord(id:string|number){
 export async function getUserLanguageApi(){
   
   try {
-    let token;
-    const user = auth.currentUser;
-    if (user) {
-      token = await user.getIdToken();
-    } else {
-      throw new Error("no user found");
-    }
+    const {token,user} = await getToken();
+    if(!user){throw new Error("no user")}
 
     const response = await axios.get(`/api/getUserLanguage/${user.uid}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -47,13 +42,8 @@ export async function getUserLanguageApi(){
 
 export async function addLanguageApi(language:string,level:string){
   try {
-    let token;
-    const user = auth.currentUser;
-    if (user) {
-      token = await user.getIdToken();
-    } else {
-      throw new Error("no user found");
-    }
+    const {token,user} = await getToken();
+    if(!user){throw new Error("no user")}
     const response = await axios.post(`/api/addLanguage`, {language,level,userId:user.uid},{headers:{Authorization: `Bearer ${token}` }})
     return {
       status:response.status,
@@ -67,9 +57,16 @@ export async function addLanguageApi(language:string,level:string){
   }
 }
 
-export async function getUserLanguageDetailApi(userLanguageId:string){
-  const response =await axios.get(`/api/getLanguage/${userLanguageId}`)
-  return response
+export async function getUserLanguageDetailApi(userLanguageId: string) {
+  try {
+    const {token} = await getToken();
+    const response = await axios.get(`/api/getLanguage/${userLanguageId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { status: response.status, data: response.data };
+  } catch {
+    return { status: 500, data: null };
+  }
 }
 
 export async function signupApi(name:string,email:string,firebaseId:string){
@@ -112,18 +109,22 @@ export async function signinApi(email:string){
   return status;
 }
 
-export async function getNewWordsApi(id:string){
-  const response = await axios.get(`/api/getNewWords?userLangId=${id}`)
-  if(response.status !== 200){
+export async function getNewWordsApi(id: string) {
+  try {
+    const { token } = await getToken();
+    const response = await axios.get(`/api/getNewWords?userLangId=${id}`,{ headers: { Authorization: `Bearer ${token}` }});
+    if (response.status !== 200) {
+      throw new Error("response error");
+    }
+    const parsed = AiNewWordFeedbackSchema.safeParse(response.data);
+    if (!parsed.success) {
+      throw new Error("parse error");
+    }
+    return { status: response.status, data: parsed.data };
+  } catch {
     toast.error("cant get new words. try again later");
-    return null
+    return { status: 500, data: undefined };
   }
-  const parsed = AiNewWordFeedbackSchema.safeParse(response.data)
-  if(!parsed.success){
-    toast.error("cant get new words. try again later");
-    return null
-  }
-  return parsed;
 }
 
 export async function getWordMeaningApi(
@@ -132,9 +133,11 @@ export async function getWordMeaningApi(
   signal: GenericAbortSignal
 ) {
   try {
+    const { token } = await getToken();
+
     const response = await axios.get(
       `/api/getWordMeaning?word=${word}&language=${language}`,
-      { signal }
+      { signal, headers: { Authorization: `Bearer ${token}` } }
     );
     if (response.status !== 200) throw new Error("API response error");
     const parsed = WordMeaningSchema.safeParse(response.data);

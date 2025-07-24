@@ -41,13 +41,18 @@ export function FlashCard() {
   }, [location, refresh]);
 
   function goToEachWord(word:string,language:string){
-    navigate(`/word?word=${word}&language=${language}`)
+    navigate(`/flashcard/word?word=${word}&language=${language}`)
   }
 
   return (
     <div className="h-full flex flex-col justify-between">
       <div>
         <h1 className="text-3xl my-9">Flash Card</h1>
+      </div>
+      <div className="flex flex-row gap-2 pb-3">
+        <span>all</span>
+        <span>learing</span>
+        <span>mastered</span>
       </div>
 
       <div className="flex-1 overflow-y-scroll">
@@ -75,7 +80,7 @@ export function FlashCard() {
                     key={each.id}
                     onClick={()=>goToEachWord(each.wordText,allWords.language)}
                   >
-                    <span>{each.wordText}</span>
+                    <span>{each.wordText} {each.mastery=="new"&&"✨"}</span> 
                     <div onClick={(e) => {e.stopPropagation();trigerDelConfirm(each.id)}}>
                       <span>❌</span>
                     </div>
@@ -107,8 +112,9 @@ export function FlashCard() {
         </div>
       </div>
 
-      <div className="my-5" onClick={() => navigate("/newwords")}>
-        <div className="border px-5 py-2 my-1">Get New Words</div>
+      <div className="my-5" >
+        <div className="border px-5 py-2 my-1 bg-gray-800 text-white" onClick={()=>navigate('/flashcard/quiz')}>Quiz</div>
+        <div className="border px-5 py-2 my-1" onClick={() => navigate("/flashcard/newwords")}>Get New Words</div>
       </div>
     </div>
   );

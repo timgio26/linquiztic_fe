@@ -19,6 +19,7 @@ export const FlashCardSchema = z.object({
 export const WordSchema = z.object({
   id: z.number(),
   wordText: z.string(),
+  mastery: z.string()
 });
 
 export const LanguageSchema = z.object({
