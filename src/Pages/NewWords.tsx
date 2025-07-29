@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "../app/hook";
 import { AiNewWordFeedback } from "../services/LinquizticAi";
 import { addWord, getNewWordsApi } from "../services/api";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 export function NewWords() {
   const {language} = useAppSelector((state) => state.language);
@@ -12,36 +13,40 @@ export function NewWords() {
   const [maxStep,setMaxStep] = useState<number>(0)
   const langId = useAppSelector((state)=>state.language.language_id)
   const navigate = useNavigate()
-  
-  // const getNewVocab = useCallback(async () => {
-  //   setLoadingWord(true);
-  //   const resp = await getAiNewVocab(language, "a1");
-  //   if (resp.success) setNewWords(resp.data);
-  //   setLoadingWord(false);
-  // },[language]);
 
-  const getNewVocab = useCallback(async () =>{
-      setLoadingWord(true);
-      const resp = await getNewWordsApi(langId)
-      if(resp){
-        setNewWords(resp.data);
-      }
-      setLoadingWord(false);
-  },[langId])
 
 
   useEffect(() => {
-    if(!language){
-      navigate('/')
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    async function getNewVocab() {
+      setLoadingWord(true);
+      const resp = await getNewWordsApi(langId, signal);
+      if (resp) {
+        setNewWords(resp.data);
+      }
+      setLoadingWord(false);
     }
-    getNewVocab()
-  }, [language,navigate,getNewVocab]);
+
+    if (!language) {
+      navigate("/");
+    }
+
+    getNewVocab();
+
+    return () => {
+      controller.abort();
+    };
+  }, [language, navigate, langId]);
 
   async function nextWord(word:string){
     if(maxStep<=step){
       const resp = await addWord(word,langId)
       if(resp==200){
         setStep((curstate)=>curstate+1)
+      }else{
+        toast.error("Something wrong")
       }
       setMaxStep((curstate)=>curstate+1)
     }

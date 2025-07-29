@@ -19,9 +19,11 @@ export function FlashCard() {
   }
 
   async function handleDelete(id: string | number) {
-    await deleteWord(id);
-    setRefresh((curState) => !curState);
-    setHiddenOnDel(false);
+    const { status } = await deleteWord(id);
+    if (status == "success") {
+      setRefresh((curState) => !curState);
+      setHiddenOnDel(false);
+    }
   }
 
   useEffect(() => {
@@ -40,19 +42,20 @@ export function FlashCard() {
     getMyVocab();
   }, [location, refresh]);
 
-  function goToEachWord(word:string,language:string){
-    navigate(`/flashcard/word?word=${word}&language=${language}`)
+  function goToEachWord(word: string, language: string) {
+    navigate(`/flashcard/word?word=${word}&language=${language}`);
+  }
+
+  function goToQuiz(){
+    const parseResult = FlashCardSchema.safeParse(location.state);
+    if(!parseResult.success){console.log("Error Parse");return;}
+    navigate("/flashcard/quiz",{state:{userLanguageId:parseResult.data.userLanguageId}})
   }
 
   return (
     <div className="h-full flex flex-col justify-between">
       <div>
         <h1 className="text-3xl my-9">Flash Card</h1>
-      </div>
-      <div className="flex flex-row gap-2 pb-3">
-        <span>all</span>
-        <span>learing</span>
-        <span>mastered</span>
       </div>
 
       <div className="flex-1 overflow-y-scroll">
@@ -73,15 +76,29 @@ export function FlashCard() {
 
           {allWords && (
             <div>
+              <div className="flex flex-row gap-2 pb-3">
+                <span>all</span>
+                <span>learing</span>
+                <span>mastered</span>
+              </div>
               <div>
                 {allWords.words?.map((each) => (
                   <div
                     className="flex justify-between px-5 py-2 border rounded my-0.5"
                     key={each.id}
-                    onClick={()=>goToEachWord(each.wordText,allWords.language)}
+                    onClick={() =>
+                      goToEachWord(each.wordText, allWords.language)
+                    }
                   >
-                    <span>{each.wordText} {each.mastery=="new"&&"✨"}</span> 
-                    <div onClick={(e) => {e.stopPropagation();trigerDelConfirm(each.id)}}>
+                    <span>
+                      {each.wordText} {each.mastery == "new" && "✨"}
+                    </span>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        trigerDelConfirm(each.id);
+                      }}
+                    >
                       <span>❌</span>
                     </div>
                   </div>
@@ -112,9 +129,19 @@ export function FlashCard() {
         </div>
       </div>
 
-      <div className="my-5" >
-        <div className="border px-5 py-2 my-1 bg-gray-800 text-white" onClick={()=>navigate('/flashcard/quiz')}>Quiz</div>
-        <div className="border px-5 py-2 my-1" onClick={() => navigate("/flashcard/newwords")}>Get New Words</div>
+      <div className="my-5">
+        <div
+          className="border px-5 py-2 my-1 bg-gray-800 text-white"
+          onClick={goToQuiz}
+        >
+          Quiz
+        </div>
+        <div
+          className="border px-5 py-2 my-1"
+          onClick={() => navigate("/flashcard/newwords")}
+        >
+          Get New Words
+        </div>
       </div>
     </div>
   );

@@ -36,6 +36,20 @@ export const WordMeaningSchema = z.object({
   sample_translation:z.string(),
 })
 
+export const QuizSchema = z.array(
+  z.object({
+    question:z.string(),
+    options:z.object({
+      a:z.string(),
+      b:z.string(),
+      c:z.string(),
+      d:z.string()
+    }),
+    answer:z.string()
+  })
+)
+
+export type Quiz = z.infer<typeof QuizSchema>;
 
 
 export type Language = z.infer<typeof LanguageSchema>;
